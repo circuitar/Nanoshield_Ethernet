@@ -5,6 +5,9 @@ Nanoshield Ethernet Library
 Arduino library to control Circuitar's Ethernet Nanoshield.
 
 This library is full compatible with the Arduino’s default Ethernet library.
+
+Usage:
+
 To adapt your code to use this library all you need to do is replace the include from arduino’s Ethernet library to this library. Like so:
 
 ```c
