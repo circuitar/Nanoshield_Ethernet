@@ -1,12 +1,12 @@
-#include "w5500.h"
-#include "socket.h"
+#include "utility/w5100.h"
+#include "utility/socket.h"
 extern "C" {
 #include "string.h"
 }
 
-#include "NanoshieldEthernet.h"
-#include "NanoshieldEthernetClient.h"
-#include "NanoshieldEthernetServer.h"
+#include "Nanoshield_Ethernet.h"
+#include "EthernetClient.h"
+#include "EthernetServer.h"
 
 EthernetServer::EthernetServer(uint16_t port)
 {

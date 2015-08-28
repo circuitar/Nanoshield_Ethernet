@@ -1,13 +1,13 @@
 // DHCP Library v0.3 - April 25, 2009
 // Author: Jordan Terrell - blog.jordanterrell.com
 
-#include "w5500.h"
+#include "utility/w5100.h"
 
 #include <string.h>
 #include <stdlib.h>
-#include "NanoshieldEthernetDhcp.h"
+#include "Dhcp.h"
 #include "Arduino.h"
-#include "NanoshieldEthernetUtil.h"
+#include "utility/util.h"
 
 int DhcpClass::beginWithDHCP(uint8_t *mac, unsigned long timeout, unsigned long responseTimeout)
 {
@@ -43,6 +43,7 @@ int DhcpClass::request_DHCP_lease(){
     _dhcpTransactionId = random(1UL, 2000UL);
     _dhcpInitialTransactionId = _dhcpTransactionId;
 
+    _dhcpUdpSocket.stop();
     if (_dhcpUdpSocket.begin(DHCP_CLIENT_PORT) == 0)
     {
       // Couldn't get a socket
@@ -165,20 +166,20 @@ void DhcpClass::send_DHCP_MESSAGE(uint8_t messageType, uint16_t secondsElapsed)
     // siaddr: already zeroed
     // giaddr: already zeroed
 
-    //put data in W5500 transmit buffer
+    //put data in W5100 transmit buffer
     _dhcpUdpSocket.write(buffer, 28);
 
     memset(buffer, 0, 32); // clear local buffer
 
     memcpy(buffer, _dhcpMacAddr, 6); // chaddr
 
-    //put data in W5500 transmit buffer
+    //put data in W5100 transmit buffer
     _dhcpUdpSocket.write(buffer, 16);
 
     memset(buffer, 0, 32); // clear local buffer
 
     // leave zeroed out for sname && file
-    // put in W5500 transmit buffer x 6 (192 bytes)
+    // put in W5100 transmit buffer x 6 (192 bytes)
   
     for(int i = 0; i < 6; i++) {
         _dhcpUdpSocket.write(buffer, 32);
@@ -210,7 +211,7 @@ void DhcpClass::send_DHCP_MESSAGE(uint8_t messageType, uint16_t secondsElapsed)
     printByte((char*)&(buffer[26]), _dhcpMacAddr[4]);
     printByte((char*)&(buffer[28]), _dhcpMacAddr[5]);
 
-    //put data in W5500 transmit buffer
+    //put data in W5100 transmit buffer
     _dhcpUdpSocket.write(buffer, 30);
 
     if(messageType == DHCP_REQUEST)
@@ -229,7 +230,7 @@ void DhcpClass::send_DHCP_MESSAGE(uint8_t messageType, uint16_t secondsElapsed)
         buffer[10] = _dhcpDhcpServerIp[2];
         buffer[11] = _dhcpDhcpServerIp[3];
 
-        //put data in W5500 transmit buffer
+        //put data in W5100 transmit buffer
         _dhcpUdpSocket.write(buffer, 12);
     }
     
@@ -243,7 +244,7 @@ void DhcpClass::send_DHCP_MESSAGE(uint8_t messageType, uint16_t secondsElapsed)
     buffer[7] = dhcpT2value;
     buffer[8] = endOption;
     
-    //put data in W5500 transmit buffer
+    //put data in W5100 transmit buffer
     _dhcpUdpSocket.write(buffer, 9);
 
     _dhcpUdpSocket.endPacket();
@@ -328,8 +329,9 @@ uint8_t DhcpClass::parseDHCPResponse(unsigned long responseTimeout, uint32_t& tr
                 
                 case dhcpServerIdentifier :
                     opt_len = _dhcpUdpSocket.read();
-                    if( *((uint32_t*)_dhcpDhcpServerIp) == 0 || 
-                        IPAddress(_dhcpDhcpServerIp) == _dhcpUdpSocket.remoteIP() )
+                    if ((_dhcpDhcpServerIp[0] == 0 && _dhcpDhcpServerIp[1] == 0 &&
+                         _dhcpDhcpServerIp[2] == 0 && _dhcpDhcpServerIp[3] == 0) ||
+                        IPAddress(_dhcpDhcpServerIp) == _dhcpUdpSocket.remoteIP())
                     {
                         _dhcpUdpSocket.read(_dhcpDhcpServerIp, sizeof(_dhcpDhcpServerIp));
                     }

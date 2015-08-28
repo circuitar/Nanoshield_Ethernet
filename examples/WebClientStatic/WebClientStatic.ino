@@ -1,5 +1,5 @@
 /*
-  Web client
+  Web client with ethernet static parameters
 
  This sketch connects to a website (http://www.google.com)
  using an Arduino Wiznet Ethernet shield.
@@ -17,20 +17,23 @@
  */
 
 #include <SPI.h>
-#include <Wire.h>
 #include <Nanoshield_Ethernet.h>
-#include <Nanoshield_EEPROM.h>
 
-// The MAC address will be read from the EEPROM on the Ethernet Nanoshield
-byte mac[6];
-
-// Inialize EEPROM with MAC address
-Nanoshield_EEPROM eeprom(1, 1, 0, true);
+// Enter a MAC address for your controller below.
+byte mac[6] = {0x0, 0x1E, 0xC0, 0xAF, 0xA8, 0xEE};
 
 // if you don't want to use DNS (and reduce your sketch size)
 // use the numeric IP instead of the name for the server:
 //IPAddress server(74,125,232,128);  // numeric IP for Google (no DNS)
 char server[] = "www.google.com";    // name address for Google (using DNS)
+
+// Set the Ethernet static parameters here (IP, Gateway, Subnet and DNS)
+IPAddress ip(192, 168, 1, 177);
+IPAddress gateway(192, 168, 1, 1);
+IPAddress subnet(255, 255, 255, 0);
+// Fill in the DNS address:
+// This could be the same as your router address (gateway) or a public DNS. 
+IPAddress myDns(8, 8, 8, 8); // google public dns. 
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server
@@ -43,34 +46,12 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for Leonardo only
   }
-
-  // Read the MAC address from the Ethernet Nanoshield EEPROM and show it on the terminal
-  eeprom.begin();
-  eeprom.startReading(0x00FA);
-  Serial.println();
-  Serial.print("MAC address: ");
-  for (int i = 0; i < 5; i++) {
-    mac[i] = eeprom.read();
-    Serial.print(mac[i], HEX);
-    Serial.print(":");
-  }
-  mac[5] = eeprom.read();
-  Serial.println(mac[5], HEX);
-
-  // initialize the ethernet device
-  Ethernet.begin(mac);
+  
+  // initialize the ethernet shield
+  Ethernet.begin(mac, ip, myDns, gateway, subnet);
 
   // give the Ethernet shield a second to initialize:
   delay(1000);
-
-  // print your local IP address:
-  Serial.print("My IP address: ");
-  for (byte thisByte = 0; thisByte < 4; thisByte++) {
-    // print the value of each byte of the IP address:
-    Serial.print(Ethernet.localIP()[thisByte], DEC);
-    Serial.print(".");
-  }
-  Serial.println();
   Serial.println("connecting...");
 
   // if you get a connection, report back via serial:
@@ -83,7 +64,7 @@ void setup() {
     client.println();
   }
   else {
-    // kf you didn't get a connection to the server:
+    // if you didn't get a connection to the server:
     Serial.println("connection failed");
   }
 }

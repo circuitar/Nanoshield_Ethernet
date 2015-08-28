@@ -2,11 +2,11 @@
 // (c) Copyright 2009-2010 MCQN Ltd.
 // Released under Apache License, version 2.0
 
-#include "w5500.h"
-#include "NanoshieldEthernetUdp.h"
-#include "NanoshieldEthernetUtil.h"
+#include "utility/w5100.h"
+#include "EthernetUdp.h"
+#include "utility/util.h"
 
-#include "NanoshieldEthernetDns.h"
+#include "Dns.h"
 #include <string.h>
 //#include <stdlib.h>
 #include "Arduino.h"

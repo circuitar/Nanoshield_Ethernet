@@ -1,19 +1,23 @@
 /*
-  Web client
+  Telnet client
 
- This sketch connects to a website (http://www.google.com)
- using an Arduino Wiznet Ethernet shield.
+ This sketch connects to a a telnet server (http://www.google.com)
+ using an Arduino Wiznet Ethernet shield.  You'll need a telnet server
+ to test this with.
+ Processing's ChatServer example (part of the network library) works well,
+ running on port 10002. It can be found as part of the examples
+ in the Processing application, available at
+ http://processing.org/
 
  Circuit:
  * Ethernet shield attached to pins 10, 11, 12, 13
 
- created 18 Dec 2009
- by David A. Mellis
+ created 14 Sep 2010
  modified 9 Apr 2012
- by Tom Igoe, based on work by Adrian McEwen
+ by Tom Igoe
  modified 15 Jul 2014
  by Soohwan Kim 
- by Luis F. Chavier @ Circuitar Eletronicos
+
  */
 
 #include <SPI.h>
@@ -27,23 +31,17 @@ byte mac[6];
 // Inialize EEPROM with MAC address
 Nanoshield_EEPROM eeprom(1, 1, 0, true);
 
-// if you don't want to use DNS (and reduce your sketch size)
-// use the numeric IP instead of the name for the server:
-//IPAddress server(74,125,232,128);  // numeric IP for Google (no DNS)
-char server[] = "www.google.com";    // name address for Google (using DNS)
+
+// Enter the IP address of the server you're connecting to:
+IPAddress server(1, 1, 1, 1);
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server
-// that you want to connect to (port 80 is default for HTTP):
+// that you want to connect to (port 23 is default for telnet;
+// if you're using Processing's ChatServer, use  port 10002):
 EthernetClient client;
 
 void setup() {
-  // Open serial communications and wait for port to open:
-  Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for Leonardo only
-  }
-
   // Read the MAC address from the Ethernet Nanoshield EEPROM and show it on the terminal
   eeprom.begin();
   eeprom.startReading(0x00FA);
@@ -57,33 +55,27 @@ void setup() {
   mac[5] = eeprom.read();
   Serial.println(mac[5], HEX);
 
-  // initialize the ethernet device
+  
+  // start the Ethernet connection:
   Ethernet.begin(mac);
+    
+  // Open serial communications and wait for port to open:
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
+
 
   // give the Ethernet shield a second to initialize:
   delay(1000);
-
-  // print your local IP address:
-  Serial.print("My IP address: ");
-  for (byte thisByte = 0; thisByte < 4; thisByte++) {
-    // print the value of each byte of the IP address:
-    Serial.print(Ethernet.localIP()[thisByte], DEC);
-    Serial.print(".");
-  }
-  Serial.println();
   Serial.println("connecting...");
 
   // if you get a connection, report back via serial:
-  if (client.connect(server, 80)) {
+  if (client.connect(server, 10002)) {
     Serial.println("connected");
-    // Make a HTTP request:
-    client.println("GET /search?q=arduino HTTP/1.1");
-    client.println("Host: www.google.com");
-    client.println("Connection: close");
-    client.println();
   }
   else {
-    // kf you didn't get a connection to the server:
+    // if you didn't get a connection to the server:
     Serial.println("connection failed");
   }
 }
@@ -97,13 +89,25 @@ void loop()
     Serial.print(c);
   }
 
+  // as long as there are bytes in the serial queue,
+  // read them and send them out the socket if it's open:
+  while (Serial.available() > 0) {
+    char inChar = Serial.read();
+    if (client.connected()) {
+      client.print(inChar);
+    }
+  }
+
   // if the server's disconnected, stop the client:
   if (!client.connected()) {
     Serial.println();
     Serial.println("disconnecting.");
     client.stop();
-
-    // do nothing forevermore:
+    // do nothing:
     while (true);
   }
 }
+
+
+
+

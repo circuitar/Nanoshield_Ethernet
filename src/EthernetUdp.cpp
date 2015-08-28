@@ -26,11 +26,11 @@
  * bjoern@cs.stanford.edu 12/30/2008
  */
 
-#include "w5500.h"
-#include "socket.h"
-#include "NanoshieldEthernet.h"
+#include "utility/w5100.h"
+#include "utility/socket.h"
+#include "Nanoshield_Ethernet.h"
 #include "Udp.h"
-#include "NanoshieldEthernetDns.h"
+#include "Dns.h"
 
 /* Constructor */
 EthernetUDP::EthernetUDP() : _sock(MAX_SOCK_NUM) {}
@@ -41,7 +41,7 @@ uint8_t EthernetUDP::begin(uint16_t port) {
     return 0;
 
   for (int i = 0; i < MAX_SOCK_NUM; i++) {
-    uint8_t s = W5500.readSnSR(i);
+    uint8_t s = socketStatus(i);
     if (s == SnSR::CLOSED || s == SnSR::FIN_WAIT) {
       _sock = i;
       break;
@@ -120,7 +120,7 @@ int EthernetUDP::parsePacket()
   // discard any remaining bytes in the last packet
   flush();
 
-  if (W5500.getRXReceivedSize(_sock) > 0)
+  if (recvAvailable(_sock) > 0)
   {
     //HACK - hand-parse the UDP packet using TCP recv method
     uint8_t tmpBuf[8];
@@ -208,7 +208,7 @@ void EthernetUDP::flush()
 {
   // could this fail (loop endlessly) if _remaining > 0 and recv in read fails?
   // should only occur if recv fails after telling us the data is there, lets
-  // hope the W5500 always behaves :)
+  // hope the w5100 always behaves :)
 
   while (_remaining)
   {
