@@ -17,6 +17,31 @@
 // W5500 controller instance
 W5500Class W5100;
 
+#define PowerD 0xF0 //0b11110000 ON
+#define TenBT 0xF8
+
+void W5500Class::PHY(boolean op){
+    uint8_t PHYCFGR_reg;
+
+   if(op == true){
+       W5100.write(0x2E,0x04,PowerD); //power down mode
+       PHYCFGR_reg = W5100.read(0x2E,0x00);
+       //delay(500);
+       W5100.write(0x2E,0x04,PHYCFGR_reg & 0x7F); //set RESET BIT = 0
+           
+       //delay(500);
+       W5100.write(0x2E,0x04,PHYCFGR_reg | 0x80); //set RESET BIT = 1
+    }else{
+        W5100.write(0x2E,0x04,TenBT); //power down mode
+        PHYCFGR_reg = W5100.read(0x2E,0x00);
+        //delay(500);
+        W5100.write(0x2E,0x04,PHYCFGR_reg & 0x7F); //set RESET BIT = 0
+        PHYCFGR_reg = W5100.read(0x2E,0x00);
+        
+        //delay(500);
+        W5100.write(0x2E,0x04,PHYCFGR_reg | 0x80); //set RESET BIT = 1
+    }
+}
 
 void W5500Class::init(void)
 {

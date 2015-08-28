@@ -159,6 +159,11 @@ public:
    */
   void recv_data_processing(SOCKET s, uint8_t *data, uint16_t len, uint8_t peek = 0);
 
+  /**
+  *Change PHY mode. First parameter is mode (PowerDown or TenBT), second parameter is ON or OFF
+  */
+  void PHY(boolean op);
+
   inline void setGatewayIp(uint8_t *_addr);
   inline void getGatewayIp(uint8_t *_addr);
 

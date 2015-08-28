@@ -12,6 +12,14 @@
 uint8_t EthernetClass::_state[MAX_SOCK_NUM] = { 0, };
 uint16_t EthernetClass::_server_port[MAX_SOCK_NUM] = { 0, };
 
+void EthernetClass::powerDown(){
+  W5100.PHY(true);
+}
+
+void EthernetClass::powerUp(){
+  W5100.PHY(false);
+}
+
 #if defined(WIZ550io_WITH_MACADDRESS)
 int EthernetClass::begin(void)
 {
