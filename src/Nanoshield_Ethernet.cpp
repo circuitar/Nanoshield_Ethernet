@@ -20,6 +20,10 @@ void EthernetClass::powerUp(){
   W5100.PHY(false);
 }
 
+void EthernetClass::reset(){
+  W5100.writeMR(1<<7);
+}
+
 #if defined(WIZ550io_WITH_MACADDRESS)
 int EthernetClass::begin(void)
 {
@@ -32,7 +36,7 @@ int EthernetClass::begin(void)
   SPI.beginTransaction(SPI_ETHERNET_SETTINGS);
   W5100.setIPAddress(IPAddress(0,0,0,0).raw_address());
   W5100.getMACAddress(mac_address);
-   SPI.endTransaction();
+  SPI.endTransaction();
  
   // Now try to get our config info from a DHCP server
   int ret = _dhcp->beginWithDHCP(mac_address);

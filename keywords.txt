@@ -32,6 +32,7 @@ remoteIP	KEYWORD2
 remotePort	KEYWORD2
 powerDown	KEYWORD2
 powerUp	KEYWORD2
+reset	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
