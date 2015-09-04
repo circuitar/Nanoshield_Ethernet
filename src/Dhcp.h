@@ -4,7 +4,7 @@
 #ifndef Dhcp_h
 #define Dhcp_h
 
-#include "NanoshieldEthernetUdp.h"
+#include "EthernetUdp.h"
 
 /* DHCP state machine. */
 #define STATE_DHCP_START 0
@@ -120,7 +120,7 @@ enum
 	endOption		=	255
 };
 
-typedef struct _RIP_MSG_FIXED
+typedef struct __attribute__((packed)) _RIP_MSG_FIXED
 {
 	uint8_t  op; 
 	uint8_t  htype; 

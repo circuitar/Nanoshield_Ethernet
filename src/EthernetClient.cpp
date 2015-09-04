@@ -1,5 +1,5 @@
-#include "w5500.h"
-#include "socket.h"
+#include "utility/w5100.h"
+#include "utility/socket.h"
 
 extern "C" {
   #include "string.h"
@@ -7,12 +7,12 @@ extern "C" {
 
 #include "Arduino.h"
 
-#include "NanoshieldEthernet.h"
-#include "NanoshieldEthernetClient.h"
-#include "NanoshieldEthernetServer.h"
-#include "NanoshieldEthernetDns.h"
+#include "Nanoshield_Ethernet.h"
+#include "EthernetClient.h"
+#include "EthernetServer.h"
+#include "Dns.h"
 
-uint16_t EthernetClient::_srcport = 1024;
+uint16_t EthernetClient::_srcport = 49152;      //Use IANA recommended ephemeral port range 49152-65535
 
 EthernetClient::EthernetClient() : _sock(MAX_SOCK_NUM) {
 }
@@ -40,7 +40,7 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
     return 0;
 
   for (int i = 0; i < MAX_SOCK_NUM; i++) {
-    uint8_t s = W5500.readSnSR(i);
+    uint8_t s = socketStatus(i);
     if (s == SnSR::CLOSED || s == SnSR::FIN_WAIT || s == SnSR::CLOSE_WAIT) {
       _sock = i;
       break;
@@ -51,7 +51,7 @@ int EthernetClient::connect(IPAddress ip, uint16_t port) {
     return 0;
 
   _srcport++;
-  if (_srcport == 0) _srcport = 1024;
+  if (_srcport == 0) _srcport = 49152;          //Use IANA recommended ephemeral port range 49152-65535
   socket(_sock, SnMR::TCP, _srcport, 0);
 
   if (!::connect(_sock, rawIPAddress(ip), port)) {
@@ -88,7 +88,7 @@ size_t EthernetClient::write(const uint8_t *buf, size_t size) {
 
 int EthernetClient::available() {
   if (_sock != MAX_SOCK_NUM)
-    return W5500.getRXReceivedSize(_sock);
+    return recvAvailable(_sock);
   return 0;
 }
 
@@ -120,8 +120,7 @@ int EthernetClient::peek() {
 }
 
 void EthernetClient::flush() {
-  while (available())
-    read();
+  ::flush(_sock);
 }
 
 void EthernetClient::stop() {
@@ -154,7 +153,7 @@ uint8_t EthernetClient::connected() {
 
 uint8_t EthernetClient::status() {
   if (_sock == MAX_SOCK_NUM) return SnSR::CLOSED;
-  return W5500.readSnSR(_sock);
+  return socketStatus(_sock);
 }
 
 // the next function allows us to use the client returned by
@@ -162,4 +161,8 @@ uint8_t EthernetClient::status() {
 
 EthernetClient::operator bool() {
   return _sock != MAX_SOCK_NUM;
+}
+
+bool EthernetClient::operator==(const EthernetClient& rhs) {
+  return _sock == rhs._sock && _sock != MAX_SOCK_NUM && rhs._sock != MAX_SOCK_NUM;
 }

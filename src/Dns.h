@@ -5,7 +5,7 @@
 #ifndef DNSClient_h
 #define DNSClient_h
 
-#include <NanoshieldEthernetUdp.h>
+#include <EthernetUdp.h>
 
 class DNSClient
 {
