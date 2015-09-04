@@ -6,12 +6,12 @@ This is an Arduino library to use Circuitar's Ethernet Nanoshield.
 This library is fully compatible with the Arduino’s default Ethernet library.
 
 * Source code: https://github.com/circuitar/Nanoshield_Ethernet
-* Documentation: http://nanoshield-ethernet.readthedocs.org/
 * Reference board: `Ethernet Nanoshield`_ from Circuitar
 
 Extra feature:
 
 * Power save mode with functions: **Ethernet.powerDown()** and **Ethernet.powerUp()**
+* Hardware reset: **Ethernet.reset()**
 
 
 ------
@@ -37,7 +37,6 @@ The following examples_ are provided:
 * WebClientStatic_ connects to a webpage with manual network values (e.g. IP, Gateway, DNS, MAC).
 * WebServer_ creates a simple webserver.
 
-.. _ReadTheDocs: http://nanoshield-ethernet.readthedocs.org
 .. _GitHub: https://github.com/circuitar/Nanoshield_Ethernet
 .. _`Ethernet Nanoshield`: https://www.circuitar.com.br/en/nanoshields/modules/ethernet/
 .. _examples: https://github.com/circuitar/Nanoshield_Ethernet/blob/master/examples/
