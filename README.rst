@@ -11,8 +11,7 @@ This library is fully compatible with the Arduino’s default Ethernet library.
 Extra feature:
 
 * Power save mode with functions: **Ethernet.powerDown()** and **Ethernet.powerUp()**
-* Hardware reset: **Ethernet.reset()**
-
+* W5100 soft reset: **Ethernet.reset()**
 
 ------
 Usage:
