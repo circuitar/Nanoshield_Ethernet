@@ -37,7 +37,7 @@ The following examples_ are provided:
 * WebServer_ creates a simple webserver.
 
 .. _GitHub: https://github.com/circuitar/Nanoshield_Ethernet
-.. _`Ethernet Nanoshield`: https://www.circuitar.com.br/en/nanoshields/modules/ethernet/
+.. _`Ethernet Nanoshield`: https://www.circuitar.com.br/nanoshields/modulos/ethernet/
 .. _examples: https://github.com/circuitar/Nanoshield_Ethernet/blob/master/examples/
 .. _WebClient: https://github.com/circuitar/Nanoshield_Ethernet/blob/master/examples/WebClient/WebClient.ino
 .. _WebClientStatic: https://github.com/circuitar/Nanoshield_LoadCell/blob/master/examples/WebClientStatic/WebClientStatic.ino
